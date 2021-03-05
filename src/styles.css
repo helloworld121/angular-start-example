@@ -1,1 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* this is necessary to support fixed header */
+body {
+  min-height: 75rem;
+  padding-top: 4.5rem;
+}
