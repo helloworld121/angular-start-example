@@ -10,17 +10,12 @@
   <div class="col-xs-12">
 
     <div class="list-group">
-      <a href="#" class="list-group-item list-group-item-action" *ngFor="let recipe of recipes">
-        <div class="float-start">
-          <h5>{{recipe.name}}</h5>
-          <p class="mb-1">{{recipe.description}}</p>
-        </div>
-        <div class="float-end">
-          <img [src]="recipe.imagePath" alt="{{recipe.name}}" class="img-fluid" style="max-height: 50px;">
-        </div>
-      </a>
+      <!-- the css classes 'list-group-item list-group-item-action' must be a direct child of 'list-group' to make css-bootstrap work -->
+      <app-recipe-item
+        class="list-group-item list-group-item-action"
+        *ngFor="let recipeEl of recipes"
+        [recipe]="recipeEl"></app-recipe-item>
     </div>
 
-    <app-recipe-item></app-recipe-item>
   </div>
 </div>
