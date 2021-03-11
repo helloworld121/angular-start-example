@@ -1,8 +1,8 @@
-<!-- the css classes 'list-group-item list-group-item-action' must be a direct child of 'list-group' to make css-bootstrap work -->
 <a
   style="cursor: pointer;"
   [routerLink]="[index]"
-  class="list-group-item-action">
+  routerLinkActive="active"
+  class="list-group-item list-group-item-action">
   <div class="float-start">
     <h5>{{recipe.name}}</h5>
     <p class="mb-1">{{recipe.description}}</p>
@@ -11,3 +11,4 @@
     <img [src]="recipe.imagePath" alt="{{recipe.name}}" class="img-fluid" style="max-height: 50px;">
   </div>
 </a>
+
