@@ -1,3 +1,5 @@
+# environment configuration
+/src/environments/environment.ts
 
 # dependencies
 /node_modules
