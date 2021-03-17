@@ -3,7 +3,8 @@ import {HttpClient} from '@angular/common/http';
 import {RecipeService} from '../recipes/recipe.service';
 import {environment} from '../../environments/environment';
 import {Recipe} from '../recipes/recipe.model';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,20 +20,21 @@ export class DataStorageService {
     });
   }
 
-  fetchRecipes(): void {
-    this.httpClient.get<Recipe[]>(environment.baseUrl4Data + 'recipes.json')
+  fetchRecipes(): Observable<Recipe[]> {
+    return this.httpClient.get<Recipe[]>(environment.baseUrl4Data + 'recipes.json')
       // prevent unexpected errors if ingredients array is empty
-      .pipe(map(recipes => {
-        return recipes.map(recipe => {
-          return {
-            ...recipe,
-            ingredients: recipe.ingredients ? recipe.ingredients : []
-          };
-        });
-      }))
-      .subscribe(recipes => {
-      this.recipeService.setRecipes(recipes);
-    });
+      .pipe(
+        map(recipes => {
+          return recipes.map(recipe => {
+            return {
+              ...recipe,
+              ingredients: recipe.ingredients ? recipe.ingredients : []
+            };
+          });
+        }),
+        // we still want to store the recipes, but we also want to subscribe to the observable
+        tap(recipes => this.recipeService.setRecipes(recipes))
+      );
   }
 
 }
