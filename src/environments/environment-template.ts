@@ -4,7 +4,10 @@
 
 export const environment = {
   production: false,
-  baseUrl4Data: 'BASE URL FOR STORING DATA - FIREBASE'
+  baseUrl4Data: 'BASE URL FOR STORING DATA - FIREBASE',
+  baseUrl4SignUp: 'URL see https://firebase.google.com/docs/reference/rest/auth#section-create-email-password',
+  baseUrl4SignIn: 'URL see https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password',
+  firebaseApiKey: 'CAN BE FIND UNDER PROJECT-GEAR > SETTINGS > GENERAL'
 };
 
 /*
