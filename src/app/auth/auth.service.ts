@@ -58,6 +58,24 @@ export class AuthService {
     );
   }
 
+  autoLogin(): void {
+    const userData: {
+      email: string,
+      id: string,
+      _token: string,
+      _tokenExpirationDate: string
+    } = JSON.parse(localStorage.getItem('userData'));
+    if (!userData) {
+      return;
+    }
+
+    const loadedUser = new UserModel(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+
+    if (loadedUser.token) {
+      this.user.next(loadedUser);
+    }
+  }
+
   logout(): void {
     this.user.next(null);
     // because there are multiple places where the logout can be called we do the redirect in the service
@@ -68,6 +86,9 @@ export class AuthService {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new UserModel(email, userId, token, expirationDate);
     this.user.next(user);
+
+    // store token in local storage
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   private handleError(errorResponse: HttpErrorResponse) {
