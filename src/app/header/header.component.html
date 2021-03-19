@@ -7,10 +7,10 @@
       </button>
       <div class="navbar-collapse" id="navbarCollapse" [class.collapse]="collapsed" (window:resize)="collapsed = true">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="isAuthenticated">
             <a class="nav-link" routerLink="/recipes" routerLinkActive="active">Recipes</a>
           </li>
-          <li class="nav-item">
+          <li class="nav-item" *ngIf="!isAuthenticated">
             <a class="nav-link" routerLink="/auth" routerLinkActive="active">Authenticate</a>
           </li>
           <li class="nav-item">
@@ -19,7 +19,11 @@
         </ul>
 
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-          <li class="nav-item dropdown">
+          <li class="nav-item" *ngIf="isAuthenticated">
+            <a class="nav-link">Logout</a>
+          </li>
+
+          <li class="nav-item dropdown" *ngIf="isAuthenticated">
             <a class="nav-link dropdown-toggle" style="cursor: pointer;" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" appDropdown>
               Manage
             </a>
