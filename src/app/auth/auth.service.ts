@@ -28,7 +28,7 @@ export class AuthService {
   //   even if they subscribe after the value is emitted
   user = new BehaviorSubject<UserModel>(null);
 
-
+  private tokenExpirationTimer: any;
 
   constructor(private httpClient: HttpClient, private router: Router) { }
 
@@ -73,6 +73,9 @@ export class AuthService {
 
     if (loadedUser.token) {
       this.user.next(loadedUser);
+      // call auto-logout
+      const expirationDurtion = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+      this.autoLogout(expirationDurtion);
     }
   }
 
@@ -80,12 +83,30 @@ export class AuthService {
     this.user.next(null);
     // because there are multiple places where the logout can be called we do the redirect in the service
     this.router.navigate(['/auth']);
+
+    // clear data on logout
+    localStorage.removeItem('userData');
+
+    // clear timer
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+    this.tokenExpirationTimer = null;
   }
+
+  autoLogout(exiprationDuration: number): void {
+    this.tokenExpirationTimer = setTimeout( () => {
+      this.logout();
+    }, exiprationDuration);
+  }
+
 
   private handleAuthentication(email: string, userId: string, token: string, expiresIn: number): void {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new UserModel(email, userId, token, expirationDate);
     this.user.next(user);
+    // call auto-logout
+    this.autoLogout(expiresIn * 1000);
 
     // store token in local storage
     localStorage.setItem('userData', JSON.stringify(user));
