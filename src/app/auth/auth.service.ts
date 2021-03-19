@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {environment} from '../../environments/environment';
-import {Observable, Subject, throwError} from 'rxjs';
+import {BehaviorSubject, Observable, Subject, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {UserModel} from './user.model';
 
@@ -21,7 +21,13 @@ export interface AuthResponseData {
 })
 export class AuthService {
 
-  user = new Subject<UserModel>();
+  // we can subscribe to this subject and always will be informed if new data is emitted
+  // user = new Subject<UserModel>();
+  // it behaves like Subject, but it gives Subscribes access to the previous emitted value,
+  //   even if they subscribe after the value is emitted
+  user = new BehaviorSubject<UserModel>(null);
+
+
 
   constructor(private httpClient: HttpClient) { }
 
