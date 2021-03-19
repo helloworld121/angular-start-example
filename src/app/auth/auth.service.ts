@@ -5,12 +5,13 @@ import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 
 
-interface AuthResponseData {
+export interface AuthResponseData {
   idToken: string;
   email: string;
   refreshToken: string;
   expiresIn: string;
   localId: string;
+  registered?: boolean; // this is only on signIn returned
 }
 
 
@@ -41,5 +42,13 @@ export class AuthService {
         })
       );
   }
+
+  login(email: string, password: string): Observable<AuthResponseData> {
+    return this.httpClient.post<AuthResponseData>(
+      environment.baseUrl4SignIn + environment.firebaseApiKey,
+      {email, password, returnSecureToken: true}
+    );
+  }
+
 
 }
