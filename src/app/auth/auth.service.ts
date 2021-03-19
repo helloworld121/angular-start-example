@@ -4,6 +4,7 @@ import {environment} from '../../environments/environment';
 import {BehaviorSubject, Observable, Subject, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {UserModel} from './user.model';
+import {Router} from '@angular/router';
 
 
 export interface AuthResponseData {
@@ -29,7 +30,7 @@ export class AuthService {
 
 
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient, private router: Router) { }
 
   signup(email: string, password: string): Observable<AuthResponseData> {
     return this.httpClient.post<AuthResponseData>(
@@ -55,6 +56,12 @@ export class AuthService {
         this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
       })
     );
+  }
+
+  logout(): void {
+    this.user.next(null);
+    // because there are multiple places where the logout can be called we do the redirect in the service
+    this.router.navigate(['/auth']);
   }
 
   private handleAuthentication(email: string, userId: string, token: string, expiresIn: number): void {
