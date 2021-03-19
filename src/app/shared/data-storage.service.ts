@@ -22,29 +22,20 @@ export class DataStorageService {
   }
 
   fetchRecipes(): Observable<Recipe[]> {
-    return this.authService.user.pipe(
-      // take will only take the number of values from the observable and than automatically unsubscribe
-      take(1),
-      // exhaust map waits for the first observable - the user - to complete
-      // after that it gives us the user and returns a new observable
-      // => the outer observable will be replaced by the observable the inner-function of exhaustMap returns
-      exhaustMap(user => {
-        return this.httpClient.get<Recipe[]>(
-          environment.baseUrl4Data + 'recipes.json',
-          {params: new HttpParams().set('auth', user.token)});
-      }),
-      // prevent unexpected errors if ingredients array is empty
-      map(recipes => {
-        return recipes.map(recipe => {
-          return {
-            ...recipe,
-            ingredients: recipe.ingredients ? recipe.ingredients : []
-          };
-        });
-      }),
-      // we still want to store the recipes, but we also want to subscribe to the observable
-      tap(recipes => this.recipeService.setRecipes(recipes))
-    );
+    return this.httpClient.get<Recipe[]>(environment.baseUrl4Data + 'recipes.json')
+      .pipe(
+        // prevent unexpected errors if ingredients array is empty
+        map(recipes => {
+          return recipes.map(recipe => {
+            return {
+              ...recipe,
+              ingredients: recipe.ingredients ? recipe.ingredients : []
+            };
+          });
+        }),
+        // we still want to store the recipes, but we also want to subscribe to the observable
+        tap(recipes => this.recipeService.setRecipes(recipes))
+      );
   }
 
 }
