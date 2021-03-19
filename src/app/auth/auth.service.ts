@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {environment} from '../../environments/environment';
-import {Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {Observable, Subject, throwError} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
+import {UserModel} from './user.model';
 
 
 export interface AuthResponseData {
@@ -20,6 +21,8 @@ export interface AuthResponseData {
 })
 export class AuthService {
 
+  user = new Subject<UserModel>();
+
   constructor(private httpClient: HttpClient) { }
 
   signup(email: string, password: string): Observable<AuthResponseData> {
@@ -27,7 +30,11 @@ export class AuthService {
       environment.baseUrl4SignUp + environment.firebaseApiKey,
       {email, password, returnSecureToken: true}
       ).pipe(
-        catchError(this.handleError)
+        catchError(this.handleError),
+        // tap executes code without changing the result
+        tap( resData => {
+          this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
+        })
       );
   }
 
@@ -36,8 +43,18 @@ export class AuthService {
       environment.baseUrl4SignIn + environment.firebaseApiKey,
       {email, password, returnSecureToken: true}
     ).pipe(
-      catchError(this.handleError)
+      catchError(this.handleError),
+      // tap executes code without changing the result
+      tap( resData => {
+        this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
+      })
     );
+  }
+
+  private handleAuthentication(email: string, userId: string, token: string, expiresIn: number): void {
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    const user = new UserModel(email, userId, token, expirationDate);
+    this.user.next(user);
   }
 
   private handleError(errorResponse: HttpErrorResponse) {
