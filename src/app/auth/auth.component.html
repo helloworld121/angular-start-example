@@ -4,7 +4,12 @@
 <!--    <div class="alert alert-danger" *ngIf="error">-->
 <!--      <p>{{ error }}</p>-->
 <!--    </div>-->
-    <app-alert [message]="error" *ngIf="error" (close)="onHandleError()"></app-alert>
+    <!-- dynamic component using *ngIf -->
+<!--    <app-alert [message]="error" *ngIf="error" (close)="onHandleError()"></app-alert>-->
+
+    <!-- add component programmatically -->
+    <!-- can be added anywhere => even outside the row -->
+    <ng-template appPlaceholder></ng-template>
 
     <div *ngIf="isLoading" style="text-align: center">
       <app-loading-spinner></app-loading-spinner>
