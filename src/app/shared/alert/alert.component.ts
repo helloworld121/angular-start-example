@@ -1,5 +1,12 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 
+/**
+ * Dynamic Components => the component should be there if something happens
+ * Possibilities to load programmatically:
+ *  - *ngIf
+ *  - (previous: Dynamic Component Loader)
+ *    => manually create Component and attach it to the DOM
+ */
 @Component({
   selector: 'app-alert',
   templateUrl: './alert.component.html',
@@ -8,4 +15,11 @@ import {Component, Input} from '@angular/core';
 export class AlertComponent {
   @Input()
   message: string;
+  @Output()
+  close = new EventEmitter<void>();
+
+  onClose(): void {
+    this.close.emit();
+  }
+
 }
