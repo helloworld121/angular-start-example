@@ -20,9 +20,10 @@ const appRoutes: Routes = [
   {path: 'shopping-list', component: ShoppingListComponent},
   {path: 'auth', component: AuthComponent},
 ];
-
+// every model works on its own => they don't communicate with each other
 @NgModule({
   imports: [RouterModule.forRoot(appRoutes)],
+  // if the module is used everything that is exported can be used
   exports: [RouterModule]
 })
 export class AppRoutingModule {
