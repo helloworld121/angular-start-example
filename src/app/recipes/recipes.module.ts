@@ -6,9 +6,9 @@ import {RecipeItemComponent} from './recipe-list/recipe-item/recipe-item.compone
 import {RecipeStartComponent} from './recipe-start/recipe-start.component';
 import {RecipeEditComponent} from './recipe-edit/recipe-edit.component';
 import {RouterModule} from '@angular/router';
-import {BrowserModule} from '@angular/platform-browser';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
+import {RecipesRoutingModule} from './recipes-routing.module';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,8 @@ import {ReactiveFormsModule} from '@angular/forms';
   imports: [
     CommonModule, // instead of BrowserModule, => to unlock ngIf and ngFor
     ReactiveFormsModule,
-    RouterModule
+    RouterModule,
+    RecipesRoutingModule
   ],
   exports: [
     RecipesComponent,
