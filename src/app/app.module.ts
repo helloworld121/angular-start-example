@@ -7,6 +7,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {HttpClientModule} from '@angular/common/http';
 import {SharedModule} from './shared/shared.module';
 import {CoreModule} from './core.module';
+import {LoggingService} from './logging.service';
 
 @NgModule({
   // ATTENTION: multiple declarations of the same thing are not allowed
@@ -22,6 +23,8 @@ import {CoreModule} from './core.module';
     CoreModule,
   ],
   providers: [
+    // by providing the Service multiple times we get multiple instances
+    LoggingService,
   ],
   bootstrap: [AppComponent],
 

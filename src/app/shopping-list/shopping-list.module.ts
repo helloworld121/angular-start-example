@@ -4,6 +4,7 @@ import {ShoppingEditComponent} from './shopping-edit/shopping-edit.component';
 import {RouterModule} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {SharedModule} from '../shared/shared.module';
+import {LoggingService} from '../logging.service';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,10 @@ import {SharedModule} from '../shared/shared.module';
       {path: '', component: ShoppingListComponent},
     ]),
     SharedModule
+  ],
+  providers: [
+    // by providing the Service multiple times we get multiple instances
+    LoggingService,
   ]
 })
 export class ShoppingListModule {
