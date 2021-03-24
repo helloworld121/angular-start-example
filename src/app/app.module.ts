@@ -5,12 +5,12 @@ import { AppComponent } from './app.component';
 import {HeaderComponent} from './header/header.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AppRoutingModule} from './app-routing.module';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 import {AuthComponent} from './auth/auth.component';
-import {AuthInterceptorService} from './auth/auth-interceptor.service';
 import {RecipesModule} from './recipes/recipes.module';
 import {ShoppingListModule} from './shopping-list/shopping-list.module';
 import {SharedModule} from './shared/shared.module';
+import {CoreModule} from './core.module';
 
 @NgModule({
   // ATTENTION: multiple declarations of the same thing are not allowed
@@ -28,9 +28,9 @@ import {SharedModule} from './shared/shared.module';
     RecipesModule,
     ShoppingListModule,
     SharedModule,
+    CoreModule,
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true}
   ],
   bootstrap: [AppComponent],
 
