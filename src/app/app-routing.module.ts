@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
+import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 
 const appRoutes: Routes = [
   {path: '', redirectTo: '/recipes', pathMatch: 'full'},
@@ -9,7 +9,10 @@ const appRoutes: Routes = [
 ];
 // every model works on its own => they don't communicate with each other
 @NgModule({
-  imports: [RouterModule.forRoot(appRoutes)],
+  imports: [
+    // strategy: PreloadAllModules => will load code-bundlings as soon as possible
+    RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules})
+  ],
   // if the module is used everything that is exported can be used
   exports: [RouterModule]
 })
