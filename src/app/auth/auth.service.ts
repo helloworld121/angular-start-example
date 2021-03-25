@@ -29,7 +29,7 @@ export class AuthService {
   // user = new Subject<UserModel>();
   // it behaves like Subject, but it gives Subscribes access to the previous emitted value,
   //   even if they subscribe after the value is emitted
-  user = new BehaviorSubject<UserModel>(null);
+  // user = new BehaviorSubject<UserModel>(null);
 
   private tokenExpirationTimer: any;
 
