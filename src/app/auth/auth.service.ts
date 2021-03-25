@@ -5,7 +5,10 @@ import {BehaviorSubject, Observable, Subject, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {UserModel} from './user.model';
 import {Router} from '@angular/router';
+import {Store} from '@ngrx/store';
 
+import * as fromApp from '../store/app.reducer';
+import * as fromAuthActions from './store/auth.actions';
 
 export interface AuthResponseData {
   idToken: string;
@@ -30,7 +33,10 @@ export class AuthService {
 
   private tokenExpirationTimer: any;
 
-  constructor(private httpClient: HttpClient, private router: Router) { }
+  constructor(
+    private httpClient: HttpClient,
+    private router: Router,
+    private store: Store<fromApp.AppState>) { }
 
   signup(email: string, password: string): Observable<AuthResponseData> {
     return this.httpClient.post<AuthResponseData>(
@@ -72,7 +78,14 @@ export class AuthService {
     const loadedUser = new UserModel(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
 
     if (loadedUser.token) {
-      this.user.next(loadedUser);
+      // this.user.next(loadedUser);
+      this.store.dispatch(new fromAuthActions.Login({
+        email: loadedUser.email,
+        userId: loadedUser.id,
+        token: loadedUser.token,
+        expirationDate: new Date(userData._tokenExpirationDate),
+      }));
+
       // call auto-logout
       const expirationDurtion = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
       this.autoLogout(expirationDurtion);
@@ -80,7 +93,9 @@ export class AuthService {
   }
 
   logout(): void {
-    this.user.next(null);
+    // this.user.next(null);
+    this.store.dispatch(new fromAuthActions.Logout());
+
     // because there are multiple places where the logout can be called we do the redirect in the service
     this.router.navigate(['/auth']);
 
@@ -104,7 +119,14 @@ export class AuthService {
   private handleAuthentication(email: string, userId: string, token: string, expiresIn: number): void {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new UserModel(email, userId, token, expirationDate);
-    this.user.next(user);
+    // this.user.next(user);
+    this.store.dispatch(new fromAuthActions.Login({
+      email,
+      userId,
+      token,
+      expirationDate,
+    }));
+
     // call auto-logout
     this.autoLogout(expiresIn * 1000);
 
