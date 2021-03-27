@@ -10,6 +10,8 @@ import {CoreModule} from './core.module';
 import {LoggingService} from './logging.service';
 import {StoreModule} from '@ngrx/store';
 import * as fromApp from './store/app.reducer';
+import {EffectsModule} from '@ngrx/effects';
+import {AuthEffects} from './auth/store/auth.effects';
 
 @NgModule({
   // ATTENTION: multiple declarations of the same thing are not allowed
@@ -22,6 +24,7 @@ import * as fromApp from './store/app.reducer';
     HttpClientModule,
     AppRoutingModule,
     StoreModule.forRoot(fromApp.appReducer),
+    EffectsModule.forRoot([AuthEffects]),
     SharedModule,
     CoreModule,
   ],
