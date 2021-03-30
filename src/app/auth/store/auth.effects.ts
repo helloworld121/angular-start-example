@@ -7,6 +7,7 @@ import {HttpClient} from '@angular/common/http';
 import {of} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
+import {UserModel} from '../user.model';
 
 export interface AuthResponseData {
   idToken: string;
@@ -19,6 +20,11 @@ export interface AuthResponseData {
 
 const handleAuthentication = (expiresIn: number, email: string, userId: string, token: string) => {
   const expirationDate = new Date(new Date().getTime() + +expiresIn * 1000);
+
+  const user = new UserModel(email, userId, token, expirationDate);
+  // store token in local storage
+  localStorage.setItem('userData', JSON.stringify(user));
+
   return new fromAuthActions.AuthenticateSuccess({
     email,
     userId,
@@ -108,6 +114,50 @@ export class AuthEffects {
     ofType(fromAuthActions.AUTHENTICATE_SUCCESS, fromAuthActions.LOGOUT), // we can react to multiple actions
     tap(() => {
       this.router.navigate(['/']);
+    })
+  );
+
+  @Effect()
+  autoLogin = this.actions$.pipe(
+    ofType(fromAuthActions.AUTO_LOGIN),
+    map(() => {
+      const userData: {
+        email: string,
+        id: string,
+        _token: string,
+        _tokenExpirationDate: string
+      } = JSON.parse(localStorage.getItem('userData'));
+      if (!userData) {
+        // we need to return a value => therefore we return a dummy action
+        return {type: 'DUMMY'};
+      }
+
+      const loadedUser = new UserModel(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+
+      if (loadedUser.token) {
+        // this.user.next(loadedUser);
+        return new fromAuthActions.AuthenticateSuccess({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate),
+        });
+
+        // call auto-logout
+        // const expirationDurtion = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
+        // this.autoLogout(expirationDurtion);
+      }
+      // we need to return a value => therefore we return a dummy action
+      return {type: 'DUMMY'};
+    })
+  );
+
+  @Effect({dispatch: false})
+  authLogout = this.actions$.pipe(
+    ofType(fromAuthActions.LOGOUT),
+    tap(() => {
+      // clear data on logout
+      localStorage.removeItem('userData');
     })
   );
 
