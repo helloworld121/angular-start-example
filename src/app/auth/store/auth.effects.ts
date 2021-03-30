@@ -104,8 +104,8 @@ export class AuthEffects {
 
   // to let Angular know, that this Effect doesn't dispatch a new Action
   @Effect({dispatch: false})
-  authSuccess = this.actions$.pipe(
-    ofType(fromAuthActions.AUTHENTICATE_SUCCESS),
+  authRedirect = this.actions$.pipe(
+    ofType(fromAuthActions.AUTHENTICATE_SUCCESS, fromAuthActions.LOGOUT), // we can react to multiple actions
     tap(() => {
       this.router.navigate(['/']);
     })

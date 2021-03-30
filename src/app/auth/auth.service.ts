@@ -38,31 +38,6 @@ export class AuthService {
     private router: Router,
     private store: Store<fromApp.AppState>) { }
 
-  signup(email: string, password: string): Observable<AuthResponseData> {
-    return this.httpClient.post<AuthResponseData>(
-      environment.baseUrl4SignUp + environment.firebaseApiKey,
-      {email, password, returnSecureToken: true}
-      ).pipe(
-        catchError(this.handleError),
-        // tap executes code without changing the result
-        tap( resData => {
-          this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
-        })
-      );
-  }
-
-  login(email: string, password: string): Observable<AuthResponseData> {
-    return this.httpClient.post<AuthResponseData>(
-      environment.baseUrl4SignIn + environment.firebaseApiKey,
-      {email, password, returnSecureToken: true}
-    ).pipe(
-      catchError(this.handleError),
-      // tap executes code without changing the result
-      tap( resData => {
-        this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
-      })
-    );
-  }
 
   autoLogin(): void {
     const userData: {
@@ -97,7 +72,7 @@ export class AuthService {
     this.store.dispatch(new fromAuthActions.Logout());
 
     // because there are multiple places where the logout can be called we do the redirect in the service
-    this.router.navigate(['/auth']);
+    // this.router.navigate(['/auth']);
 
     // clear data on logout
     localStorage.removeItem('userData');

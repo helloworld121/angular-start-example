@@ -7,6 +7,8 @@ import * as fromApp from '../store/app.reducer';
 import {Router} from '@angular/router';
 import {map} from 'rxjs/operators';
 
+import * as fromAuthActions from '../auth/store/auth.actions';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html'
@@ -45,7 +47,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout(): void {
-    this.authService.logout();
+    // this.authService.logout();
+    this.store.dispatch(new fromAuthActions.Logout());
   }
 
 }

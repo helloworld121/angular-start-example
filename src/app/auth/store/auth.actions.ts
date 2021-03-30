@@ -5,6 +5,7 @@ export const SIGNUP_START = '[Auth] Signup Start';
 // success and fail logic is the same for login and signup
 export const AUTHENTICATE_SUCCESS = '[Auth] Authenticate Success';
 export const AUTHENTICATE_FAIL = '[Auth] Authenticate Fail';
+export const CLEAR_ERROR = '[Auth] clear error';
 export const LOGOUT = '[Auth] Logout';
 
 export class AuthenticateSuccess implements Action {
@@ -36,10 +37,15 @@ export class SignupStart implements Action {
   constructor(public payload: {email: string; password: string}) { }
 }
 
+export class ClearError implements Action {
+  readonly type = CLEAR_ERROR;
+}
+
 export type AuthActions =
   | LoginStart
   | SignupStart
   | AuthenticateSuccess
   | AuthenticateFail
   | Logout
+  | ClearError
   ;
