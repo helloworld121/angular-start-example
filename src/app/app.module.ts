@@ -29,7 +29,7 @@ import {StoreRouterConnectingModule} from '@ngrx/router-store';
     StoreModule.forRoot(fromApp.appReducer),
     EffectsModule.forRoot([AuthEffects]),
     StoreDevtoolsModule.instrument({logOnly: environment.production}),
-    StoreRouterConnectingModule.forRoot(),
+    StoreRouterConnectingModule.forRoot(), // makes it possible to react to routes
     SharedModule,
     CoreModule,
   ],

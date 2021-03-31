@@ -1,18 +1,25 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
-import {RecipeService} from '../recipes/recipe.service';
-import {environment} from '../../environments/environment';
-import {Recipe} from '../recipes/recipe.model';
-import {exhaustMap, map, take, tap} from 'rxjs/operators';
+import {HttpClient} from '@angular/common/http';
+import {map, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
-import {AuthService} from '../auth/auth.service';
+import {Store} from '@ngrx/store';
+
+import {environment} from '../../environments/environment';
+
+import {Recipe} from '../recipes/recipe.model';
+import {RecipeService} from '../recipes/recipe.service';
+import * as fromRecipesActions from '../recipes/store/recipes.actions';
+import * as fromApp from '../store/app.reducer';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
 
-  constructor(private httpClient: HttpClient, private recipeService: RecipeService, private authService: AuthService) { }
+  constructor(
+    private httpClient: HttpClient,
+    private recipeService: RecipeService,
+    private store: Store<fromApp.AppState>) { }
 
   storeRecipes(): void {
     const recipes = this.recipeService.getRecipes();
@@ -34,7 +41,10 @@ export class DataStorageService {
           });
         }),
         // we still want to store the recipes, but we also want to subscribe to the observable
-        tap(recipes => this.recipeService.setRecipes(recipes))
+        tap(recipes => {
+          // this.recipeService.setRecipes(recipes);
+          this.store.dispatch(new fromRecipesActions.SetRecipes(recipes));
+        })
       );
   }
 
