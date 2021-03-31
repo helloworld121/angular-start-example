@@ -1,10 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {environment} from '../../environments/environment';
-import {BehaviorSubject, Observable, Subject, throwError} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {HttpErrorResponse} from '@angular/common/http';
+import {throwError} from 'rxjs';
 import {UserModel} from './user.model';
-import {Router} from '@angular/router';
 import {Store} from '@ngrx/store';
 
 import * as fromApp from '../store/app.reducer';
@@ -34,101 +31,20 @@ export class AuthService {
   private tokenExpirationTimer: any;
 
   constructor(
-    private httpClient: HttpClient,
-    private router: Router,
     private store: Store<fromApp.AppState>) { }
 
 
-  autoLogin(): void {
-    const userData: {
-      email: string,
-      id: string,
-      _token: string,
-      _tokenExpirationDate: string
-    } = JSON.parse(localStorage.getItem('userData'));
-    if (!userData) {
-      return;
-    }
-
-    const loadedUser = new UserModel(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
-
-    if (loadedUser.token) {
-      // this.user.next(loadedUser);
-      this.store.dispatch(new fromAuthActions.AuthenticateSuccess({
-        email: loadedUser.email,
-        userId: loadedUser.id,
-        token: loadedUser.token,
-        expirationDate: new Date(userData._tokenExpirationDate),
-      }));
-
-      // call auto-logout
-      const expirationDurtion = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-      this.autoLogout(expirationDurtion);
-    }
-  }
-
-  logout(): void {
-    // this.user.next(null);
-    this.store.dispatch(new fromAuthActions.Logout());
-
-    // because there are multiple places where the logout can be called we do the redirect in the service
-    // this.router.navigate(['/auth']);
-
-    // clear data on logout
-    localStorage.removeItem('userData');
-
-    // clear timer
-    if (this.tokenExpirationTimer) {
-      clearTimeout(this.tokenExpirationTimer);
-    }
-    this.tokenExpirationTimer = null;
-  }
-
-  autoLogout(exiprationDuration: number): void {
+  setLogoutTimer(exiprationDuration: number): void {
     this.tokenExpirationTimer = setTimeout( () => {
-      this.logout();
+      this.store.dispatch(new fromAuthActions.Logout());
     }, exiprationDuration);
   }
 
-
-  private handleAuthentication(email: string, userId: string, token: string, expiresIn: number): void {
-    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-    const user = new UserModel(email, userId, token, expirationDate);
-    // this.user.next(user);
-    this.store.dispatch(new fromAuthActions.AuthenticateSuccess({
-      email,
-      userId,
-      token,
-      expirationDate,
-    }));
-
-    // call auto-logout
-    this.autoLogout(expiresIn * 1000);
-
-    // store token in local storage
-    localStorage.setItem('userData', JSON.stringify(user));
-  }
-
-  private handleError(errorResponse: HttpErrorResponse) {
-    console.log('[AuthService] handleError');
-    let errorMessage = 'An unknown error occured';
-    // it is possible, that there is no error-key => for example due to network problems
-    if (!errorResponse.error || !errorResponse.error.error) {
-      console.log('[AuthService] handleError ', errorMessage);
-      return throwError(errorMessage);
+  clearLogoutTimer(): void {
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+      this.tokenExpirationTimer = null;
     }
-    switch (errorResponse.error.error.message) {
-      case 'EMAIL_EXISTS': errorMessage = 'The email address is already in use by another account.'; break;
-      case 'OPERATION_NOT_ALLOWED': errorMessage = 'Password sign-in is disabled for this project.'; break;
-      case 'TOO_MANY_ATTEMPTS_TRY_LATER': errorMessage = 'We have blocked all requests from this device due to unusual activity. Try again later.'; break;
-
-      case 'EMAIL_NOT_FOUND': errorMessage = 'There is no user record corresponding to this identifier. The user may have been deleted.'; break;
-      case 'INVALID_PASSWORD': errorMessage = 'The password is invalid or the user does not have a password.'; break;
-      case 'USER_DISABLED': errorMessage = 'The user account has been disabled by an administrator.'; break;
-    }
-    console.log('[AuthService] handleError ', errorMessage);
-    return throwError(errorMessage);
   }
-
 
 }
