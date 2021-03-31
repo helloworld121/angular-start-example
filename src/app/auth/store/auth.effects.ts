@@ -31,6 +31,7 @@ const handleAuthentication = (expiresIn: number, email: string, userId: string, 
     userId,
     token,
     expirationDate,
+    redirect: true
   });
 };
 
@@ -121,8 +122,11 @@ export class AuthEffects {
   authRedirect = this.actions$.pipe(
     // ofType(fromAuthActions.AUTHENTICATE_SUCCESS, fromAuthActions.LOGOUT), // we can react to multiple actions
     ofType(fromAuthActions.AUTHENTICATE_SUCCESS), // we can react to multiple actions
-    tap(() => {
-      this.router.navigate(['/']);
+    tap((authSuccessAction: fromAuthActions.AuthenticateSuccess) => {
+      // only redirect if necessaray
+      if (authSuccessAction.payload.redirect) {
+        this.router.navigate(['/']);
+      }
     })
   );
 
@@ -153,6 +157,7 @@ export class AuthEffects {
           userId: loadedUser.id,
           token: loadedUser.token,
           expirationDate: new Date(userData._tokenExpirationDate),
+          redirect: false
         });
 
         // call auto-logout
