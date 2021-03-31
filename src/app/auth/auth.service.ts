@@ -1,20 +1,17 @@
 import {Injectable} from '@angular/core';
-import {HttpErrorResponse} from '@angular/common/http';
-import {throwError} from 'rxjs';
-import {UserModel} from './user.model';
 import {Store} from '@ngrx/store';
 
 import * as fromApp from '../store/app.reducer';
 import * as fromAuthActions from './store/auth.actions';
 
-export interface AuthResponseData {
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-  registered?: boolean; // this is only on signIn returned
-}
+// export interface AuthResponseData {
+//   idToken: string;
+//   email: string;
+//   refreshToken: string;
+//   expiresIn: string;
+//   localId: string;
+//   registered?: boolean; // this is only on signIn returned
+// }
 
 
 @Injectable({
@@ -33,7 +30,7 @@ export class AuthService {
   constructor(
     private store: Store<fromApp.AppState>) { }
 
-
+  // this could be moved to ngrx-effects, but this would need way more effort
   setLogoutTimer(exiprationDuration: number): void {
     this.tokenExpirationTimer = setTimeout( () => {
       this.store.dispatch(new fromAuthActions.Logout());
