@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {map} from 'rxjs/operators';
 
 import * as fromAuthActions from '../auth/store/auth.actions';
+import * as fromRecipesActions from '../recipes/store/recipes.actions';
 
 @Component({
   selector: 'app-header',
@@ -43,7 +44,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onFetchData(): void {
-    this.dataStorageService.fetchRecipes().subscribe();
+    // this.dataStorageService.fetchRecipes().subscribe();
+    this.store.dispatch(new fromRecipesActions.FetchRecipes());
   }
 
   onLogout(): void {

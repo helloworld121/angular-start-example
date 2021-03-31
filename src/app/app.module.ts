@@ -15,6 +15,7 @@ import {AuthEffects} from './auth/store/auth.effects';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {environment} from '../environments/environment';
 import {StoreRouterConnectingModule} from '@ngrx/router-store';
+import {RecipesEffects} from './recipes/store/recipes.effects';
 
 @NgModule({
   // ATTENTION: multiple declarations of the same thing are not allowed
@@ -27,7 +28,7 @@ import {StoreRouterConnectingModule} from '@ngrx/router-store';
     HttpClientModule,
     AppRoutingModule,
     StoreModule.forRoot(fromApp.appReducer),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, RecipesEffects]),
     StoreDevtoolsModule.instrument({logOnly: environment.production}),
     StoreRouterConnectingModule.forRoot(), // makes it possible to react to routes
     SharedModule,
