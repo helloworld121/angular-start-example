@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {Store} from '@ngrx/store';
 import {Actions, ofType} from '@ngrx/effects';
 
 import {Recipe} from './recipe.model';
 import * as fromApp from '../store/app.reducer';
 import * as fromRecipesActions from '../recipes/store/recipes.actions';
-import {take} from 'rxjs/operators';
+import {map, switchMap, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -22,14 +22,27 @@ export class RecipesResolverService implements Resolve<Recipe[]>{
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Recipe[]> | Promise<Recipe[]> | Recipe[] {
     // we don't need to subscribe in here because the resolver will do this => to check if data is there
 
-    this.store.dispatch(new fromRecipesActions.FetchRecipes());
-
-    // we need to return an observable for that will be wait to finish
-    // => therefore we filter for the action that should be finished
-    return this.actions$.pipe(
-      ofType(fromRecipesActions.SET_RECIPES),
-      take(1) // to complete and unsubscribe subscription
+    // we don't want to send any requests if we already have recipes
+    return this.store.select('recipes').pipe(
+      take(1), // to ensure this won't be executed multiple times
+      map(recipesState => {
+        return recipesState.recipes;
+      }),
+      switchMap(recipes => {
+        if (recipes.length === 0) {
+          this.store.dispatch(new fromRecipesActions.FetchRecipes());
+          // we need to return an observable for that will be wait to finish
+          // => therefore we filter for the action that should be finished
+          return this.actions$.pipe(
+            ofType(fromRecipesActions.SET_RECIPES),
+            take(1) // to complete and unsubscribe subscription
+          );
+        } else {
+          return of(recipes);
+        }
+      })
     );
+
 
   }
 
