@@ -4,9 +4,9 @@ import {Store} from '@ngrx/store';
 import {map, switchMap} from 'rxjs/operators';
 
 import {Recipe} from '../recipe.model';
-import {RecipeService} from '../recipe.service';
 import * as fromApp from '../../store/app.reducer';
 import * as fromRecipesActions from '../store/recipes.actions';
+import * as fromShoppingListActions from '../../shopping-list/store/shopping-list.actions';
 
 @Component({
   selector: 'app-recipe-detail',
@@ -19,7 +19,6 @@ export class RecipeDetailComponent implements OnInit {
   id: number;
 
   constructor(
-    private recipeService: RecipeService,
     private router: Router,
     private route: ActivatedRoute,
     private store: Store<fromApp.AppState>) { }
@@ -51,7 +50,8 @@ export class RecipeDetailComponent implements OnInit {
 
   onAddToShoppingList(): void {
     // console.log('[RecipeDetailComponent] onAddToShoppingList');
-    this.recipeService.addIngredientsToShoppingList(this.recipe.ingredients);
+    // this.recipeService.addIngredientsToShoppingList(this.recipe.ingredients);
+    this.store.dispatch(new fromShoppingListActions.AddIngredients(this.recipe.ingredients));
   }
 
   onEditRecipe(): void {
